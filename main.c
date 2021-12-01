@@ -11,12 +11,12 @@ struct Transaction
 };
 
 // create struct Date
-struct Date
+typedef struct Date
 {
     int day;
     int month;
     int year;
-};
+}Date;
 
 // create struct Account
 struct Account
@@ -30,7 +30,6 @@ void date(struct Date *d) {
     time_t now;
 
     // Obtain current time
-    // `time()` returns the current time of the system as a `time_t` value
     time(&now);
 
     // localtime converts a `time_t` value to calendar time and
@@ -44,9 +43,13 @@ void date(struct Date *d) {
 }
 
 int main() {
-    struct Date *d1;
+    printf("hello\n");
+    struct Date d;
+    struct Date * d1 = &d;
     date(d1);
-    printf("%i", d1->day);
-    printf("%i", d1->month);
+
+    printf("Jour :%i\n", d1->day);
+    printf("Mois :%i\n", d1->month);
+    printf_s("Annee :%i\n", d1->year);
     return 0;
 }

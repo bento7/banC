@@ -1,0 +1,3 @@
+C:/Users/thoma/CLionProjects/banC/cmake-build-debug/CMakeFiles/banC.dir
+C:/Users/thoma/CLionProjects/banC/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/thoma/CLionProjects/banC/cmake-build-debug/CMakeFiles/rebuild_cache.dir
