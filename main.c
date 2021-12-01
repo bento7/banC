@@ -1,22 +1,28 @@
 #include <stdio.h>
 #include <time.h>
+// create struct Date
+struct Date
+{
+    int day;
+    int month;
+    int year;
+};
 
 // create struct Transaction
 struct Transaction
 {
-    int date;
+    struct Date date;
     int amount;
     char name_giver [32];
     char name_receiver [32];
 };
 
-// create struct Date
-typedef struct Date
+// create struct Entete
+struct Entete
 {
-    int day;
-    int month;
-    int year;
-}Date;
+    struct Date date;
+    int solde;
+};
 
 // create struct Account
 struct Account
@@ -43,13 +49,9 @@ void date(struct Date *d) {
 }
 
 int main() {
-    printf("hello\n");
     struct Date d;
     struct Date * d1 = &d;
     date(d1);
-
-    printf("Jour :%i\n", d1->day);
-    printf("Mois :%i\n", d1->month);
-    printf_s("Annee :%i\n", d1->year);
+    printf("%i, %i, %i", d.year, d.day, d.month);
     return 0;
 }
