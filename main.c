@@ -15,13 +15,13 @@ struct Date
 };
 
 // create struct Transaction
-struct Transaction
+typedef struct Transaction
 {
     struct Date date;
     float amount;
     char label[LENGTH_LABEL];
     char name[LENGTH_NAME]; // émetteur si transaction > 0 :réception d'€ | receveur si transaction < 0: envoi d'€
-};
+}TRANSACTION;
 
 // create struct Entete
 struct Entete
@@ -55,20 +55,19 @@ void print_Date(struct Date *d){
 
 void ouvrir(FILE **f, char nom[]) {
     //qui ouvre le fichier donné ou le crée sinon.
-    *f = fopen(nom, "r+");
+    *f = fopen(nom, "wb");
     if (*f == NULL) {
-        *f = fopen(nom, "w");
+        *f = fopen(nom, "wb");
         if (*f == NULL) {
             perror("Erreur à l'ouverture du fichier");
             exit(EXIT_FAILURE);
         }
     }
-    // si File n'existe pas
-    // Créé file
 }
 
 void fermer(FILE*f){
     if (f != NULL) {
+        fflush(f);
         fclose(f);
     }
 }
@@ -80,13 +79,14 @@ struct Entete creation_entete(struct Date d, float solde){
     return e1;
 };
 
-int ajout_transaction(FILE* fp,struct Transaction* transaction){
-    // note : use fwrite() fonction
+int ajout_transaction(FILE* fp, TRANSACTION* transaction){
+    int res;
 
-    fp = fopen( "file.txt" , "w" );
-    fwrite(transaction , 1 , sizeof(transaction) , fp);
-
-//    return *transaction;
+    ouvrir((FILE **) fp, "test.dat");        // Ouverture du fichier
+    fseek(fp, 0, SEEK_END);         // On se place à la fin du fichier
+    fwrite(transaction, sizeof(TRANSACTION), 1, fp); // On écrit la dernière transaction et on récupère l'entier
+    fermer(fp);                                   // On ferme le fichier
+    return res;                                     // On retourne le résultat de fwrite
 };
 
 FILE* creation_fichier(struct Entete, char*){
@@ -107,15 +107,18 @@ int main() {
     date(&d);
     print_Date(&d);
 
-
     float montant = 100;
     const char label[LENGTH_LABEL] = "Label";
     const char nom[LENGTH_NAME] = "NomClt";
-    struct Transaction trans1;
+    TRANSACTION trans1;
     trans1 = creation_transaction(d, montant, &label, &nom);
     printf("%f, %s, %s, ", trans1.amount, trans1.label, trans1.name);
     print_Date(&trans1.date);
 
+    int resultat;
+    FILE* fichier;
+    resultat = ajout_transaction(&fichier, &trans1);
+    printf("%i:", resultat);
 
     //struct Entete e;
     //struct Entete *e1 = &e;
