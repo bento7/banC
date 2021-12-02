@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/thoma/CLionProjects/banC/cmake-build-debug",
-		"source" : "C:/Users/thoma/CLionProjects/banC"
+		"build" : "D:/Projets_C/banC/cmake-build-debug",
+		"source" : "D:/Projets_C/banC"
 	},
 	"version" : 
 	{

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="banC"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/Projets_C/banC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="banC">
+				<Option output="D:/Projets_C/banC/cmake-build-debug/banC.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Projets_C/banC/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 banC"/>
+					<CompileFile command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="banC/fast">
+				<Option output="D:/Projets_C/banC/cmake-build-debug/banC.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Projets_C/banC/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
+					<Add directory="D:/projects/CLion 2021.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 banC/fast"/>
+					<CompileFile command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/Projets_C/banC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/Projets_C/banC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/projects/CLion 2021.3/bin/mingw/bin/mingw32-make.exe -f &quot;D:/Projets_C/banC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/Projets_C/banC/main.c">
+			<Option target="banC"/>
+		</Unit>
+		<Unit filename="D:/Projets_C/banC/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
