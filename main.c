@@ -98,7 +98,6 @@ int ajout_transaction(FILE* fp,struct Transaction *transaction){
 
 FILE* creation_fichier(struct Entete, char*){
 
-
 }
 
 int main() {
