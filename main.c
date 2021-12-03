@@ -104,13 +104,12 @@ int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
     return res;                                     // On retourne le résultat de fwrite
 };
 
-
-struct Transaction lire_transaction(FILE* fp){
+struct Transaction read_last_transaction(FILE* fp){
     struct Transaction trans;
     FILE* ftoread = fopen("test.dat", "rb+");
-
+    fseek(ftoread, 0, SEEK_END);
     fread(&trans, sizeof(trans), 1, ftoread);
-    // faire un close
+    fclose(ftoread);
     return trans;
 }
 
@@ -139,7 +138,7 @@ int main() {
     printf("resultat: %i\n", resultat);
 
     TRANSACTION trans2;
-    trans2 = lire_transaction((FILE *) &fichier);
+    trans2 = read_last_transaction((FILE *) &fichier);
     print_transaction(trans2);
 
     return 0;
