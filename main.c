@@ -7,17 +7,17 @@
 #define LENGTH_LABEL 50
 
 // create struct Date
-struct Date
+typedef struct Date
 {
     int day;
     int month;
     int year;
-};
+}DATE;
 
 // create struct Transaction
 typedef struct Transaction
 {
-    struct Date date;
+    DATE date;
     float amount;
     char label[LENGTH_LABEL];
     char name[LENGTH_NAME]; // émetteur si transaction > 0 :réception d'€ | receveur si transaction < 0: envoi d'€
@@ -26,7 +26,7 @@ typedef struct Transaction
 // create struct Entete
 typedef struct Entete
 {
-    struct Date date;
+    DATE date;
     float solde;
 }ENTETE;
 
@@ -37,7 +37,7 @@ struct Account
     char name [LENGTH_NAME];
 };
 
-void date(struct Date *d) {
+void date(DATE *d) {
     // Utilisation du module <time.h>
     time_t now;
     time(&now);
@@ -49,7 +49,7 @@ void date(struct Date *d) {
     d->year = local->tm_year + 1900;   // Année 1900
 }
 
-void print_Date(struct Date *d){
+void print_Date(DATE *d){
     printf("Date: %i/%i/%i\n", d->day, d->month, d->year);
 }
 
@@ -74,7 +74,7 @@ void fermer(FILE*f){
     }
 }
 
-struct Entete creation_entete(struct Date d, float solde){
+struct Entete creation_entete(DATE d, float solde){
     struct Entete e1;
     e1.date = d;
     e1.solde = solde;
@@ -87,13 +87,12 @@ FILE* creation_fichier(ENTETE entete, char* nom1){
     ENTETE *e = &entete;
 //    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
     fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
-    fread(&entete, sizeof(entete), 1, file);
-    printf("yo");
+//    fread(&entete, sizeof(entete), 1, file);
     fermer(file);
     return file;
 }
 
-struct Transaction creation_transaction(struct Date d, float amt, char* label, char* name){
+struct Transaction creation_transaction(DATE  d, float amt, char* label, char* name){
     struct Transaction t1;
     t1.date = d;
     t1.amount = amt;
@@ -104,7 +103,7 @@ struct Transaction creation_transaction(struct Date d, float amt, char* label, c
 
 int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
     int res = 0;
-    ouvrir(&filepath, "test.dat");        // Ouverture du fichier
+    ouvrir(&filepath, "compte.dat");        // Ouverture du fichier
     fseek(filepath, 0, SEEK_END);         // On se place à la fin du fichier
     res = (int) fwrite(transaction, sizeof(TRANSACTION), 1, (FILE *) filepath); // On écrit la dernière transaction et on récupère l'entier
     fermer(filepath);// On ferme le fichier
@@ -116,64 +115,89 @@ int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
 
 struct Transaction lire_transaction(FILE* fp){
     struct Transaction trans;
-    FILE* ftoread = fopen("test.dat", "rb+");
+    FILE* ftoread = fopen(fp, "rb+");
 
     fread(&trans, sizeof(trans), 1, ftoread);
     fermer(ftoread);
     // faire un close
     return trans;
 }
-struct Entete lire_entete(FILE* fp){
-    ENTETE entete;
-    FILE* ftoread = fopen("compte_bento.dat", "rb+");
 
-    fread(&entete, sizeof(entete), 1, ftoread);
-    // faire un close
-    return entete;
-}
 void print_transaction(TRANSACTION trans){
     printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", trans.amount, trans.label, trans.name);
     print_Date(&trans.date);
 }
 
 void print_entete(ENTETE e){
-    printf("\nSolde est %f",e.solde);
+    printf("\nSolde est %f \n",e.solde);
 //    ENTETE *entete =&e;
 //    print_Date(entete.date);
 
 }
+struct Entete lire_entete(FILE* fp){
+    ENTETE entete;
+    ouvrir(&fp, "compte.dat");
+
+    fread(&entete, sizeof(entete), 1, fp);
+    print_entete(entete);
+    fermer(fp);
+    // faire un close
+    return entete;
+}
+
+void mise_a_jour(FILE* f, DATE date){
+    ENTETE e_anc;
+    e_anc = lire_entete(f);
+    ouvrir(&f, "compte.dat");
+    fseek(f,0,SEEK_END);
+    fseek(f,-sizeof(TRANSACTION), SEEK_CUR);
+    TRANSACTION trans;
+    fread(&trans, sizeof(TRANSACTION), 1, f);
+    ENTETE e_nouv;
+    e_nouv.solde = e_anc.solde + trans.amount;
+    e_nouv.date = date;
+    fseek(f, 0, SEEK_SET);
+    fwrite(&e_nouv, sizeof(ENTETE),1, f);
+    fermer(f);
+
+}
+
+
+
+
 int main() {
     struct Date d;
     date(&d);
     print_Date(&d);
 
     FILE* file;
-    char nom1[LENGTH_NAME] = "compte_bento.dat";
+    const char nom[LENGTH_NAME] = "compte.dat";
     ENTETE e;
     float solde_bento = 54;
     e = creation_entete(d, solde_bento);
 //    printf("%f\n", e.solde);
 //    print_Date(&e.date);
-    file = creation_fichier(e, &nom1);
+    file = creation_fichier(e, &nom);
     ENTETE be;
     be = lire_entete(file);
     print_entete(be);
     float montant = 100;
     const char label[LENGTH_LABEL] = "Label";
-    const char nom[LENGTH_NAME] = "NomClt";
+    const char nom1[LENGTH_NAME] = "cpt";
     TRANSACTION trans1;
-    trans1 = creation_transaction(d, montant, &label, &nom);
+    trans1 = creation_transaction(d, montant, &label, &nom1);
     printf("%f, %s, %s, ", trans1.amount, trans1.label, trans1.name);
     print_Date(&trans1.date);
 
     int resultat;
-    FILE* fichier;
-    resultat = ajout_transaction((FILE *) &fichier, &trans1);
+    resultat = ajout_transaction((FILE *) &file, &trans1);
     printf("resultat: %i\n", resultat);
 
-    TRANSACTION trans2;
-    trans2 = lire_transaction((FILE *) &fichier);
-    print_transaction(trans2);
+//    mise_a_jour(&file, d);
+
+
+
+
 
     return 0;
 }
