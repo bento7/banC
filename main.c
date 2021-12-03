@@ -58,10 +58,10 @@ void ouvrir(FILE **f, char nom[]) {
     *f = fopen(nom, "wb+");
 
     if (*f == NULL) {
-            perror("Erreur à l'ouverture du fichier");
-            exit(EXIT_FAILURE);
-        }
+        perror("Erreur à l'ouverture du fichier");
+        exit(EXIT_FAILURE);
     }
+}
 
 
 void fermer(FILE*f){
