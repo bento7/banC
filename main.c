@@ -50,25 +50,27 @@ void date(struct Date *d) {
 }
 
 void print_Date(struct Date *d){
-    printf("%i/%i/%i\n", d->day, d->month, d->year);
+    printf("Date: %i/%i/%i\n", d->day, d->month, d->year);
 }
 
 void ouvrir(FILE **f, char nom[]) {
     //qui ouvre le fichier donné ou le crée sinon.
-    *f = fopen(nom, "w");
+    *f = fopen(nom, "wb+");
+
     if (*f == NULL) {
-        *f = fopen(nom, "w");
-        if (*f == NULL) {
-            perror("Erreur à l'ouverture du fichier");
-            exit(EXIT_FAILURE);
-        }
+        perror("Erreur à l'ouverture du fichier");
+        exit(EXIT_FAILURE);
     }
 }
 
-void fermer(FILE *f){
+
+void fermer(FILE*f){
+    int res2 = 0;
+
     if (f != NULL) {
         fflush(f);
-        fclose(f);
+        res2 = (int) fclose(f);
+        printf("Fermerture:%i\n", res2);
     }
 }
 
@@ -88,20 +90,6 @@ FILE* creation_fichier(ENTETE entete, char* nom1){
     return file;
 }
 
-
-int ajout_transaction(FILE* fp, TRANSACTION* transaction){
-    int res;
-    ouvrir(fp, "test.txt");        // Ouverture du fichier
-    fseek(fp, 0, SEEK_END);         // On se place à la fin du fichier
-    fwrite(transaction, sizeof(TRANSACTION), 1, fp); // On écrit la dernière transaction et on récupère l'entier
-    fermer(fp);                                   // On ferme le fichier
-    return res;                                     // On retourne le résultat de fwrite
-};
-
-
-
-
-
 struct Transaction creation_transaction(struct Date d, float amt, char* label, char* name){
     struct Transaction t1;
     t1.date = d;
@@ -111,18 +99,55 @@ struct Transaction creation_transaction(struct Date d, float amt, char* label, c
     return t1;
 };
 
+int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
+    int res = 0;
+    ouvrir(&filepath, "test.dat");        // Ouverture du fichier
+    fseek(filepath, 0, SEEK_END);         // On se place à la fin du fichier
+    res = (int) fwrite(transaction, sizeof(TRANSACTION), 1, (FILE *) filepath); // On écrit la dernière transaction et on récupère l'entier
+    fermer(filepath);// On ferme le fichier
+    printf("Res1:%i\n", res);
+
+    return res;                                     // On retourne le résultat de fwrite
+};
+
+
+struct Transaction lire_transaction(FILE* fp){
+    struct Transaction trans;
+    FILE* ftoread = fopen("test.dat", "rb+");
+
+    fread(&trans, sizeof(trans), 1, ftoread);
+    // faire un close
+    return trans;
+}
+struct Entete lire_entete(FILE* fp){
+    ENTETE entete;
+    FILE* ftoread = fopen("compte_bento.dat", "rb+");
+
+    fread(&entete, sizeof(entete), 1, ftoread);
+    // faire un close
+    return entete;
+}
+void print_transaction(TRANSACTION trans){
+    printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", trans.amount, trans.label, trans.name);
+    print_Date(&trans.date);
+}
+
 
 int main() {
     struct Date d;
     date(&d);
     print_Date(&d);
 
+    char nom1[LENGTH_NAME] = "compte_bento.dat";
+    ENTETE e;
+    float solde_bento = 54;
+    e = creation_entete(d, solde_bento);
+    printf("%f\n", e.solde);
+    print_Date(&e.date);
+    creation_fichier(e, &nom1);
+    
+
     float montant = 100;
-
-
-
-
-
     const char label[LENGTH_LABEL] = "Label";
     const char nom[LENGTH_NAME] = "NomClt";
     TRANSACTION trans1;
@@ -130,22 +155,14 @@ int main() {
     printf("%f, %s, %s, ", trans1.amount, trans1.label, trans1.name);
     print_Date(&trans1.date);
 
-//    int resultat;
-//    FILE* fichier;
-//    resultat = ajout_transaction(&fichier, &trans1);
-//    printf("%i:", resultat);
+    int resultat;
+    FILE* fichier;
+    resultat = ajout_transaction((FILE *) &fichier, &trans1);
+    printf("resultat: %i\n", resultat);
 
-    char nom1[LENGTH_NAME] = "compte_bento.txt";
-    ENTETE e;
-    float solde_bento = 54;
-    e = creation_entete(d, solde_bento);
-    printf("%f\n", e.solde);
-    print_Date(&e.date);
-    creation_fichier(e, &nom1);
+    TRANSACTION trans2;
+    trans2 = lire_transaction((FILE *) &fichier);
+    print_transaction(trans2);
 
-
-    //struct Entete e;
-    //struct Entete *e1 = &e;
-    //creation_entete();
     return 0;
 }
