@@ -69,8 +69,8 @@ void fermer(FILE*f){
 
     if (f != NULL) {
         fflush(f);
-        res2 = (int) fclose(f);
-        printf("Fermerture:%i\n", res2);
+        fclose(f);
+//        printf("Fermerture:%i\n", res2);
     }
 }
 
@@ -85,7 +85,10 @@ FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
     ouvrir(&file, nom1);
     ENTETE *e = &entete;
-    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
+//    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
+    fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
+    fread(&entete, sizeof(entete), 1, file);
+    printf("yo");
     fermer(file);
     return file;
 }
@@ -116,6 +119,7 @@ struct Transaction lire_transaction(FILE* fp){
     FILE* ftoread = fopen("test.dat", "rb+");
 
     fread(&trans, sizeof(trans), 1, ftoread);
+    fermer(ftoread);
     // faire un close
     return trans;
 }
@@ -132,21 +136,28 @@ void print_transaction(TRANSACTION trans){
     print_Date(&trans.date);
 }
 
+void print_entete(ENTETE e){
+    printf("\nSolde est %f",e.solde);
+//    ENTETE *entete =&e;
+//    print_Date(entete.date);
 
+}
 int main() {
     struct Date d;
     date(&d);
     print_Date(&d);
 
+    FILE* file;
     char nom1[LENGTH_NAME] = "compte_bento.dat";
     ENTETE e;
     float solde_bento = 54;
     e = creation_entete(d, solde_bento);
-    printf("%f\n", e.solde);
-    print_Date(&e.date);
-    creation_fichier(e, &nom1);
-    
-
+//    printf("%f\n", e.solde);
+//    print_Date(&e.date);
+    file = creation_fichier(e, &nom1);
+    ENTETE be;
+    be = lire_entete(file);
+    print_entete(be);
     float montant = 100;
     const char label[LENGTH_LABEL] = "Label";
     const char nom[LENGTH_NAME] = "NomClt";
