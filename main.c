@@ -31,11 +31,11 @@ typedef struct Entete
 }ENTETE;
 
 // create struct Account
-struct Account
+typedef struct Account
 {
     int id;
-    char name [LENGTH_NAME];
-};
+    char name[LENGTH_NAME];
+}ACCOUNT;
 
 void date(struct Date *d) {
     // Utilisation du module <time.h>
@@ -149,7 +149,6 @@ void print_entete(ENTETE e){
 void mise_a_jour(FILE* f, struct Date date){
     ENTETE e_anc;
 
-    ouvrir(&f, "compte.dat");
 //    fread(&e_anc, sizeof(ENTETE), 1, f);
     e_anc = lire_entete(f);
 
@@ -172,6 +171,41 @@ void mise_a_jour(FILE* f, struct Date date){
     fermer(f);
 
 }
+int compte_existant(FILE *file, int numcpt){
+    ACCOUNT account;
+    int exist = 0, end;
+    while (!exist) {
+        end = fread(&account, sizeof(ACCOUNT),1,file);
+        if (end == 0) break;
+        if (strcmp(account.id, numcpt) == 0) {
+            // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
+            fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int creer_utilisateur(char* nom){
+    ACCOUNT account;
+    strcpy(account.name, nom);
+    //création du fihcier de compte personnel
+
+
+    // mise à jour du répertoire de la banque
+    FILE* rep;
+    int num = rand(), inc = 0;
+    ouvrir(&rep,"banque.dat");
+    while (!inc){
+        if (!compte_existant(rep, num)) break;
+        num = rand();
+    }
+    account.id = num;
+    fseek(rep, 0, SEEK_END);
+    fwrite(&account, sizeof(ACCOUNT), 1, rep);
+    fermer(rep);
+}
+
 
 int main() {
     struct Date d;
@@ -182,6 +216,7 @@ int main() {
     // On ajoute une transactionde 100
     // On met à jour le fichier
     FILE* file;
+
     char nom1[LENGTH_NAME] = "compte.dat";
     ENTETE e;
     float solde_bento = 54;
@@ -189,6 +224,7 @@ int main() {
 //    printf("%f\n", e.solde);
 //    print_Date(&e.date);
     creation_fichier(e, &nom1);
+    ouvrir(&file, "compte.dat");
 
     float montant = 100;
     const char label[LENGTH_LABEL] = "Label";
@@ -209,6 +245,7 @@ int main() {
 
 
     mise_a_jour(file, d);
+    fermer(file);
     ENTETE be;
     be = lire_entete(file);
     print_entete(be);
