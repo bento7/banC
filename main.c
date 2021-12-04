@@ -148,6 +148,7 @@ void print_entete(ENTETE e){
 
 void mise_a_jour(FILE* f, struct Date date){
     ENTETE e_anc;
+    ouvrir(&f, "compte.dat");
 
 //    fread(&e_anc, sizeof(ENTETE), 1, f);
     e_anc = lire_entete(f);
@@ -216,6 +217,7 @@ int main() {
     // On ajoute une transactionde 100
     // On met à jour le fichier
     FILE* file;
+    ouvrir(&file, "compte.dat");
 
     char nom1[LENGTH_NAME] = "compte.dat";
     ENTETE e;
@@ -224,7 +226,7 @@ int main() {
 //    printf("%f\n", e.solde);
 //    print_Date(&e.date);
     creation_fichier(e, &nom1);
-    ouvrir(&file, "compte.dat");
+//    ouvrir(&file, "compte.dat");
 
     float montant = 100;
     const char label[LENGTH_LABEL] = "Label";
