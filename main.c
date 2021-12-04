@@ -154,11 +154,10 @@ void mise_a_jour(FILE* f, struct Date date){
     e_anc = lire_entete(f);
 
     print_entete(e_anc);
-
-    //    fseek(f,0,SEEK_END);
+    // placement pointeur pour lire la dernière transaction
     fseek(f,-1l *sizeof(TRANSACTION), SEEK_END);
     TRANSACTION trans;
-//    trans = lire_transaction(f);
+    trans = lire_transaction(f);
     fread(&trans, sizeof(TRANSACTION), 1, f);
     ENTETE e_nouv;
 //    print_entete(e_nouv);
@@ -166,6 +165,7 @@ void mise_a_jour(FILE* f, struct Date date){
 
     print_transaction(trans);
     e_nouv.date = date;
+    //réécriture de l'entete avec le nouveau solde et la date
     rewind(f);
     fwrite(&e_nouv, sizeof(ENTETE),1, f);
     fseek(f, 0, SEEK_SET);
@@ -178,6 +178,9 @@ int main() {
     date(&d);
     print_Date(&d);
 
+    // On crée le fichier compte.dat, une entete avec un solde à 54
+    // On ajoute une transactionde 100
+    // On met à jour le fichier
     FILE* file;
     char nom1[LENGTH_NAME] = "compte.dat";
     ENTETE e;
@@ -200,9 +203,9 @@ int main() {
     resultat = ajout_transaction((FILE *) &file, &trans1);
     printf("resultat: %i\n", resultat);
 
-    TRANSACTION trans2;
-    trans2 = lire_transaction((FILE *) &file);
-    print_transaction(trans2);
+//    TRANSACTION trans2;
+//    trans2 = lire_transaction(file);
+//    print_transaction(trans2);
 
 
     mise_a_jour(file, d);
