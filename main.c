@@ -105,10 +105,10 @@ struct Transaction creation_transaction(struct Date d, float amt, char* label, c
 
 int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
     int res = 0;
-    ouvrir(&filepath, "compte.dat");        // Ouverture du fichier
+//    ouvrir(&filepath, "compte.dat");        // Ouverture du fichier
     fseek(filepath, 0, SEEK_END);         // On se place à la fin du fichier
     res = (int) fwrite(transaction, sizeof(TRANSACTION), 1, (FILE *) filepath); // On écrit la dernière transaction et on récupère l'entier
-    fermer(filepath);// On ferme le fichier
+//    fermer(filepath);// On ferme le fichier
     printf("Res1:%i\n", res);
 
     return res;                                     // On retourne le résultat de fwrite
@@ -191,8 +191,14 @@ int creer_utilisateur(char* nom){
     ACCOUNT account;
     strcpy(account.name, nom);
     //création du fihcier de compte personnel
-
-
+    struct Date d;
+    date(&d);
+    print_Date(&d);
+    ENTETE  entete;
+    entete = creation_entete(d, 0);//file en argv? car compte perso
+    char ext[] = ".dat";
+    char nomcpt = strcat(nom, nom);
+    creation_fichier(entete,&nomcpt);
     // mise à jour du répertoire de la banque
     FILE* rep;
     int num = rand(), inc = 0;
@@ -205,10 +211,11 @@ int creer_utilisateur(char* nom){
     fseek(rep, 0, SEEK_END);
     fwrite(&account, sizeof(ACCOUNT), 1, rep);
     fermer(rep);
+    return 0;
 }
 
 
-int main() {
+int test(FILE *file) {
     struct Date d;
     date(&d);
     print_Date(&d);
@@ -216,8 +223,8 @@ int main() {
     // On crée le fichier compte.dat, une entete avec un solde à 54
     // On ajoute une transactionde 100
     // On met à jour le fichier
-    FILE* file;
-    ouvrir(&file, "compte.dat");
+//    FILE* file;
+//    ouvrir(&file, "compte.dat");
 
     char nom1[LENGTH_NAME] = "compte.dat";
     ENTETE e;
@@ -238,7 +245,7 @@ int main() {
 
     int resultat;
 
-    resultat = ajout_transaction((FILE *) &file, &trans1);
+    resultat = ajout_transaction((FILE *) file, &trans1);
     printf("resultat: %i\n", resultat);
 
 //    TRANSACTION trans2;
@@ -247,9 +254,58 @@ int main() {
 
 
     mise_a_jour(file, d);
-    fermer(file);
+//    fermer(file);
     ENTETE be;
     be = lire_entete(file);
     print_entete(be);
+    return 0;
+}
+
+
+void str_str(char *nomclt){
+
+    char ext = ".dat";
+    char dest;
+    strcat(dest,nomclt);
+    strcat(dest, ext);
+    printf(dest);
+}
+void menu(FILE *fic)
+{
+    char choix;
+    char nom = "bento";
+
+    do {
+        printf("\n\nAjouter un nouveau client..............: A\n");
+        printf("Lister tous les comptes de clients.....: L\n");
+        printf("Relevé d'un compte client..............: R\n");
+        printf("Virement depuis un compte client.......: V\n");
+        printf("Mise a jour du solde d'un client.......: M\n");
+        printf("Quitter................................: Q\n");
+        printf(" votre choix: ");
+        rewind(stdin);
+        scanf("%c",&choix);
+        switch(choix)
+        {
+            case 'a':
+            case 'A':
+                test(fic);
+                break;
+            case 'l':
+            case 'L':
+                str_str(nom);
+//                creer_utilisateur("bentv2");
+                break;
+        }
+    } while (choix != 'q' && choix != 'Q');
+}
+
+
+
+int main() {
+    FILE *file;
+    ouvrir(&file,"banque.dat");
+    menu(file);
+    fermer(file);
     return 0;
 }
