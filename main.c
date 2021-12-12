@@ -263,13 +263,16 @@ int test(FILE *file) {
 
 
 void str_str(char *nomclt){
-
-    char ext = ".dat";
-    char dest;
-    strcat(dest,nomclt);
-    strcat(dest, ext);
-    printf(dest);
+    int cpt = 101;
+    char charValue[3];
+    sprintf(charValue, "%i", cpt);
+    char dest[7];
+    char *pdest = &dest;
+    strncat(pdest,charValue, 3);
+    strncat(pdest,".dat", 7);
+    printf("la soluce: %s", pdest);
 }
+
 void menu(FILE *fic)
 {
     char choix;
@@ -304,8 +307,11 @@ void menu(FILE *fic)
 
 int main() {
     FILE *file;
-    ouvrir(&file,"banque.dat");
-    menu(file);
-    fermer(file);
+    //ouvrir(&file,"banque.dat");
+    //menu(file);
+    //fermer(file);
+    char nom[3] = "Bento";
+    char* pnom = &nom;
+    str_str(pnom);
     return 0;
 }
