@@ -154,13 +154,8 @@ char str_str(int cpt){
     char *pdest = &dest;
     strncat(pdest,charValue, 3);
     strncat(pdest,".dat", 7);
-<<<<<<< HEAD
     printf("char: %s", dest);
     return pdest;
-=======
-    printf("la soluce: %s", pdest);
-    return &dest;
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
 }
 
 void mise_a_jour(FILE* f, struct Date date){
@@ -220,24 +215,6 @@ int compte_existant_char(FILE *file, int numcpt){
     return 0;
 }
 
-<<<<<<< HEAD
-=======
-int compte_existant_char(FILE *file, int numcpt){
-    ACCOUNT account;
-    int exist = 0, end;
-    while (!exist) {
-        end = fread(&account, sizeof(ACCOUNT),1,file);
-        if (end == 0) break;
-        if (strcmp(account.id, numcpt) == 0) {
-            // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
-            fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
-            return 1;
-        }
-    }
-    return 0;
-}
-
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
 
 int creer_utilisateur(char* nom){
     ACCOUNT account;
@@ -246,11 +223,7 @@ int creer_utilisateur(char* nom){
     srand(time(NULL));
     int num = rand(), inc = 0;
     ouvrir(&rep,"banque.dat");
-<<<<<<< HEAD
     printf("Hel%i", num);
-=======
-
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
     while (!inc){
         if (!compte_existant_num(rep, num)) break;
         num = rand();
@@ -258,19 +231,12 @@ int creer_utilisateur(char* nom){
 
     account.id = num;
 
-<<<<<<< HEAD
     strcpy(account.name, &nom);
     //création du fichier de compte personnel
-=======
-
-    strcpy(account.name, &nom);
-    //création du fihcier de compte personnel
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
     struct Date d;
     date(&d);
     ENTETE  entete;
     entete = creation_entete(d, 0);//file en argv? car compte perso
-<<<<<<< HEAD
 
     char charValue[3];
     sprintf(charValue, "%i", account.id);
@@ -281,11 +247,6 @@ int creer_utilisateur(char* nom){
     printf("dest: %s\n", dest);
     printf("pdest: %s\n", pdest);
     creation_fichier(entete,pdest);
-=======
-    char nom_cpt_perso = str_str(account.id);
-    creation_fichier(entete,nom_cpt_perso);
-
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
 
     // mise à jour du répertoire de la banque
 
@@ -369,11 +330,7 @@ void menu(FILE *fic)
             case 'a':
             case 'A':
                 printf("Nom Client : \n");
-<<<<<<< HEAD
                 scanf("%s",&nom);
-=======
-                gets(nom);
->>>>>>> 2a340c33b00fdcf81c30183c05863178d77181c0
                 creer_utilisateur(&nom);
                 break;
             case 'l':
