@@ -338,6 +338,7 @@ void menu(FILE *fic)
             case 'l':
             case 'L':
 //                lire le fichier banque
+//              Tom
                 break;
             case 'r':
             case 'R':
@@ -351,6 +352,7 @@ void menu(FILE *fic)
 //                imprimer solde début de mois
 //                  Toutes les transactions
 //                imprimer solde fin de mois
+//              Bento
                 break;
             case 'v':
             case 'V':
@@ -360,7 +362,9 @@ void menu(FILE *fic)
                 scanf("%s",&nom2);
                 printf("Entrer le montant :");
                 scanf("%i",&montant);
-
+                virement_de_a(char*, char*, date, &montant)
+// Virement
+// Tom : + compte de
                 break;
             case 'm':
             case 'M':
@@ -375,6 +379,7 @@ void menu(FILE *fic)
                 //  On update l'entête
                 //  On print que ça a bien été fait
                 //     en lisant la valeur dans le fichier
+                // Bento
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
