@@ -84,9 +84,12 @@ struct Entete creation_entete(struct Date d, float solde){
 
 FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
+
+    printf("C'est le nom de quoi ? %s\n", nom1);
     ouvrir(&file, nom1);
+    printf("Hello Word");
     ENTETE *e = &entete;
-//    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
+    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
     fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
     fread(&entete, sizeof(entete), 1, file);
     printf("yo");
@@ -144,7 +147,16 @@ void print_entete(ENTETE e){
 
 }
 
-
+char str_str(int cpt){
+    char charValue[3];
+    sprintf(charValue, "%i", cpt);
+    char dest[7];
+    char *pdest = &dest;
+    strncat(pdest,charValue, 3);
+    strncat(pdest,".dat", 7);
+    printf("char: %s", dest);
+    return pdest;
+}
 
 void mise_a_jour(FILE* f, struct Date date){
     ENTETE e_anc;
@@ -172,12 +184,28 @@ void mise_a_jour(FILE* f, struct Date date){
     fermer(f);
 
 }
-int compte_existant(FILE *file, int numcpt){
+int compte_existant_num(FILE *file, int numcpt){
+    ACCOUNT account;
+
+    int exist = 0, end;
+    while (!exist) {
+        end = fread(&account, sizeof(ACCOUNT),1,file);
+        if (end == 1) break;
+        if (account.id== numcpt) {
+            // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
+            fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int compte_existant_char(FILE *file, int numcpt){
     ACCOUNT account;
     int exist = 0, end;
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
-        if (end == 0) break;
+        if (end == 1) break;
         if (strcmp(account.id, numcpt) == 0) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
             fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
@@ -187,27 +215,41 @@ int compte_existant(FILE *file, int numcpt){
     return 0;
 }
 
+
 int creer_utilisateur(char* nom){
     ACCOUNT account;
-    strcpy(account.name, nom);
-    //création du fihcier de compte personnel
-    struct Date d;
-    date(&d);
-    print_Date(&d);
-    ENTETE  entete;
-    entete = creation_entete(d, 0);//file en argv? car compte perso
-    char ext[] = ".dat";
-    char nomcpt = strcat(nom, nom);
-    creation_fichier(entete,&nomcpt);
-    // mise à jour du répertoire de la banque
     FILE* rep;
+
+    srand(time(NULL));
     int num = rand(), inc = 0;
     ouvrir(&rep,"banque.dat");
+    printf("Hel%i", num);
     while (!inc){
-        if (!compte_existant(rep, num)) break;
+        if (!compte_existant_num(rep, num)) break;
         num = rand();
     }
+
     account.id = num;
+
+    strcpy(account.name, &nom);
+    //création du fichier de compte personnel
+    struct Date d;
+    date(&d);
+    ENTETE  entete;
+    entete = creation_entete(d, 0);//file en argv? car compte perso
+
+    char charValue[3];
+    sprintf(charValue, "%i", account.id);
+    char dest[7];
+    char *pdest = &dest;
+    strncat(dest,charValue, 3);
+    strncat(dest,".dat", 7);
+    printf("dest: %s\n", dest);
+    printf("pdest: %s\n", pdest);
+    creation_fichier(entete,pdest);
+
+    // mise à jour du répertoire de la banque
+
     fseek(rep, 0, SEEK_END);
     fwrite(&account, sizeof(ACCOUNT), 1, rep);
     fermer(rep);
@@ -261,22 +303,17 @@ int test(FILE *file) {
     return 0;
 }
 
+int compte_de(char* nomclt) {
 
-void str_str(char *nomclt){
-    int cpt = 101;
-    char charValue[3];
-    sprintf(charValue, "%i", cpt);
-    char dest[7];
-    char *pdest = &dest;
-    strncat(pdest,charValue, 3);
-    strncat(pdest,".dat", 7);
-    printf("la soluce: %s", pdest);
+
+
 }
+
 
 void menu(FILE *fic)
 {
     char choix;
-    char nom = "bento";
+    char nom[LENGTH_NAME];
 
     do {
         printf("\n\nAjouter un nouveau client..............: A\n");
@@ -292,12 +329,13 @@ void menu(FILE *fic)
         {
             case 'a':
             case 'A':
-                test(fic);
+                printf("Nom Client : \n");
+                scanf("%s",&nom);
+                creer_utilisateur(&nom);
                 break;
             case 'l':
             case 'L':
-                str_str(nom);
-//                creer_utilisateur("bentv2");
+//                str_str(nom);
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
@@ -307,11 +345,8 @@ void menu(FILE *fic)
 
 int main() {
     FILE *file;
-    //ouvrir(&file,"banque.dat");
-    //menu(file);
-    //fermer(file);
-    char nom[3] = "Bento";
-    char* pnom = &nom;
-    str_str(pnom);
+    ouvrir(&file,"banque.dat");
+    menu(file);
+    fermer(file);
     return 0;
 }
