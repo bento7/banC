@@ -71,7 +71,6 @@ void fermer(FILE*f){
     if (f != NULL) {
         fflush(f);
         fclose(f);
-//        printf("Fermerture:%i\n", res2);
     }
 }
 
@@ -84,15 +83,11 @@ struct Entete creation_entete(struct Date d, float solde){
 
 FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
-
-    printf("C'est le nom de quoi ? %s\n", nom1);
     ouvrir(&file, nom1);
-    printf("Hello Word");
     ENTETE *e = &entete;
     fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
     fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
     fread(&entete, sizeof(entete), 1, file);
-    printf("yo");
     fermer(file);
     return file;
 }
@@ -112,7 +107,6 @@ int ajout_transaction(FILE* filepath, TRANSACTION* transaction){
     fseek(filepath, 0, SEEK_END);         // On se place à la fin du fichier
     res = (int) fwrite(transaction, sizeof(TRANSACTION), 1, (FILE *) filepath); // On écrit la dernière transaction et on récupère l'entier
 //    fermer(filepath);// On ferme le fichier
-    printf("Res1:%i\n", res);
 
     return res;                                     // On retourne le résultat de fwrite
 };
@@ -147,16 +141,6 @@ void print_entete(ENTETE e){
 
 }
 
-char str_str(int cpt){
-    char charValue[3];
-    sprintf(charValue, "%i", cpt);
-    char dest[7];
-    char *pdest = &dest;
-    strncat(pdest,charValue, 3);
-    strncat(pdest,".dat", 7);
-    printf("char: %s", dest);
-    return pdest;
-}
 
 void mise_a_jour(FILE* f, struct Date date){
     ENTETE e_anc;
@@ -190,7 +174,7 @@ int compte_existant_num(FILE *file, int numcpt){
     int exist = 0, end;
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
-        if (end == 1) break;
+        if (end == 0) break;
         if (account.id== numcpt) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
             fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
@@ -215,27 +199,26 @@ int compte_existant_char(FILE *file, int numcpt){
     return 0;
 }
 
-
 int creer_utilisateur(char* nom){
     ACCOUNT account;
-    FILE* rep;
+    FILE* f;
+    ouvrir(&f,"banque.dat");
 
     srand(time(NULL));
     int num = rand(), inc = 0;
-    ouvrir(&rep,"banque.dat");
-    printf("Hel%i", num);
+    num = num % 1000;
+
     while (!inc){
-        if (!compte_existant_num(rep, num)) break;
+        if (!compte_existant_num(f, num)) break;
         num = rand();
     }
-
     account.id = num;
 
-    strcpy(account.name, &nom);
+    strcpy(account.name, nom);
     //création du fichier de compte personnel
     struct Date d;
     date(&d);
-    ENTETE  entete;
+    ENTETE entete;
     entete = creation_entete(d, 0);//file en argv? car compte perso
 
     char charValue[3];
@@ -244,18 +227,15 @@ int creer_utilisateur(char* nom){
     char *pdest = &dest;
     strncat(dest,charValue, 3);
     strncat(dest,".dat", 7);
-    printf("dest: %s\n", dest);
-    printf("pdest: %s\n", pdest);
+
     creation_fichier(entete,pdest);
 
-    // mise à jour du répertoire de la banque
-
-    fseek(rep, 0, SEEK_END);
-    fwrite(&account, sizeof(ACCOUNT), 1, rep);
-    fermer(rep);
+    // Mise à jour du fichier banque
+    fseek(f, 0, SEEK_END);
+    fwrite(&account, sizeof(ACCOUNT), 1, f);
+    fermer(f);
     return 0;
 }
-
 
 int test(FILE *file) {
     struct Date d;
@@ -302,20 +282,116 @@ int test(FILE *file) {
     print_entete(be);
     return 0;
 }
+// //////////////////////////////// //
+//                  TOM             //
+// //////////////////////////////// //
 
-int compte_de(char* nomclt) {
+void read_Banque(){
+    /*
+     * Cette Fonction a pour but de lister les comptes clients
+     * */
+    int res;
+    FILE *f;
+    ACCOUNT account;
 
+    printf("Liste des comptes clients :\n");
 
+    ouvrir(&f, "banque.dat");
+    fseek(f, 0, SEEK_SET); // On se place au début du document
+    do{
+        res = fread(&account, sizeof(ACCOUNT), 1, f); // Ecriture du compte dans account
+        if(res > 0) printf("N0 COMPTE : %i || NOM CLIENT : %s\n", account.id, account.name); // on évite d'imprimer en double la derniere ligne
+    }while(res > 0);
+    fermer(f);
+}
 
+// Renvoie le numéro de compte associé à ce nom.
+int compte_de(char *nomclt){
+    ACCOUNT account;
+
+    FILE *f;
+    ouvrir(&f, "banque.dat");
+
+    int res;
+    do{
+        res = fread(&account, sizeof(ACCOUNT), 1, f); // Ecriture du compte dans account
+        if (strcmp(nomclt, account.name) == 0){
+            return account.id;
+        }
+    }while(res > 0);
+    return -1; // pas de compte
+}
+
+virement_de_a(){
+    // Récupération des informations nécessaires
+    char nom_emetteur[LENGTH_NAME];
+    char nom_receveur[LENGTH_NAME];
+    float montant;
+
+    printf("Quel le nom du client emetteur? :");
+    scanf("%s",&nom_emetteur);
+    printf("Quel est le nom du client receveur? :");
+    scanf("%s",&nom_receveur);
+    printf("Entrer le montant :");
+    scanf("%f",&montant);
+
+    // Récupération des numéros de compte des clients
+    int nocpt_em, nocpt_rec;
+    nocpt_em = compte_de(&nom_emetteur);
+    nocpt_rec = compte_de(&nom_receveur);
+
+    // Initialisation des noms et des labels
+    char label_em[LENGTH_LABEL], label_rec[LENGTH_LABEL];
+
+    sprintf(label_em, "virement to %i", nocpt_rec);
+    sprintf(label_rec, "virement from %i", nocpt_em);
+
+    // création des transactions
+    struct Transaction trans_em, trans_rec;
+    struct Date d;
+    date(&d);
+
+    trans_em = creation_transaction(d, - 1 * montant, label_em, nom_emetteur);
+    trans_rec = creation_transaction(d, montant, label_rec, nom_receveur);
+
+    print_transaction(trans_em);
+    print_transaction(trans_rec);
+    // Ecriture dans le compte de l'emetteur
+    FILE *f;
+
+    char charValue[3];
+    sprintf(charValue, "%i", nocpt_em);
+    char dest[7];
+    char *pdest = &dest;
+    strncat(dest,charValue, 3);
+    strncat(dest,".dat", 7);
+
+    ouvrir(&f, dest);
+    ajout_transaction(f, &trans_em);
+    fermer(f);
+
+    // Ecriture sur le compte du receveur
+    FILE *frec;
+
+    char charValuer[3];
+    sprintf(charValuer, "%i", nocpt_rec);
+    char destr[7];
+    char *pdestr = &destr;
+    strncat(destr,charValuer, 3);
+    strncat(destr,".dat", 7);
+
+    ouvrir(&frec, destr);
+    ajout_transaction(frec, &trans_rec);
+    fermer(frec);
+
+    return 0;
 }
 
 
-void menu(FILE *fic)
+void menu()
 {
     char choix;
     char nom[LENGTH_NAME];
-    char nom2[LENGTH_NAME];
-    int montant, mois, annee;
 
     do {
         printf("\n\nAjouter un nouveau client..............: A\n");
@@ -337,58 +413,17 @@ void menu(FILE *fic)
                 break;
             case 'l':
             case 'L':
-//                lire le fichier banque
-//              Tom
-                break;
-            case 'r':
-            case 'R':
-//                imprimer releve
-                printf("Quel client? :");
-                scanf("%s",&nom);
-                printf("Quel mois? :");
-                scanf("%i",&mois);
-                printf("Quelle année? :");
-                scanf("%i",&annee);
-//                imprimer solde début de mois
-//                  Toutes les transactions
-//                imprimer solde fin de mois
-//              Bento
+                read_Banque();
                 break;
             case 'v':
             case 'V':
-                printf("Quel client emetteur? :");
-                scanf("%s",&nom);
-                printf("Quel client recoit? :");
-                scanf("%s",&nom2);
-                printf("Entrer le montant :");
-                scanf("%i",&montant);
-                virement_de_a(char*, char*, date, &montant)
-// Virement
-// Tom : + compte de
-                break;
-            case 'm':
-            case 'M':
-//                mise a jour
-                printf("Combien d'argent voulez-vous ajouter :");
-                scanf("%i",&montant);
-                printf("Nom de la personne");
-                scanf("%i",&nom);
-                // fonction(montant, nom)
-                //  On ouvre son fichier
-                //  On ajoute une transaction
-                //  On update l'entête
-                //  On print que ça a bien été fait
-                //     en lisant la valeur dans le fichier
-                // Bento
+                virement_de_a();
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
 }
 
 int main() {
-    FILE *file;
-    ouvrir(&file,"banque.dat");
-    menu(file);
-    fermer(file);
+    menu();
     return 0;
 }
