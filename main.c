@@ -314,11 +314,13 @@ void menu(FILE *fic)
 {
     char choix;
     char nom[LENGTH_NAME];
+    char nom2[LENGTH_NAME];
+    int montant, mois, annee;
 
     do {
         printf("\n\nAjouter un nouveau client..............: A\n");
         printf("Lister tous les comptes de clients.....: L\n");
-        printf("Relevé d'un compte client..............: R\n");
+        printf("Releve d'un compte client..............: R\n");
         printf("Virement depuis un compte client.......: V\n");
         printf("Mise a jour du solde d'un client.......: M\n");
         printf("Quitter................................: Q\n");
@@ -329,19 +331,54 @@ void menu(FILE *fic)
         {
             case 'a':
             case 'A':
-                printf("Nom Client : \n");
+                printf("Nom Client :");
                 scanf("%s",&nom);
                 creer_utilisateur(&nom);
                 break;
             case 'l':
             case 'L':
-//                str_str(nom);
+//                lire le fichier banque
+                break;
+            case 'r':
+            case 'R':
+//                imprimer releve
+                printf("Quel client? :");
+                scanf("%s",&nom);
+                printf("Quel mois? :");
+                scanf("%i",&mois);
+                printf("Quelle année? :");
+                scanf("%i",&annee);
+//                imprimer solde début de mois
+//                  Toutes les transactions
+//                imprimer solde fin de mois
+                break;
+            case 'v':
+            case 'V':
+                printf("Quel client emetteur? :");
+                scanf("%s",&nom);
+                printf("Quel client recoit? :");
+                scanf("%s",&nom2);
+                printf("Entrer le montant :");
+                scanf("%i",&montant);
+
+                break;
+            case 'm':
+            case 'M':
+//                mise a jour
+                printf("Combien d'argent voulez-vous ajouter :");
+                scanf("%i",&montant);
+                printf("Nom de la personne");
+                scanf("%i",&nom);
+                // fonction(montant, nom)
+                //  On ouvre son fichier
+                //  On ajoute une transaction
+                //  On update l'entête
+                //  On print que ça a bien été fait
+                //     en lisant la valeur dans le fichier
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
 }
-
-
 
 int main() {
     FILE *file;
