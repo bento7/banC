@@ -144,7 +144,16 @@ void print_entete(ENTETE e){
 
 }
 
-
+char str_str(int cpt){
+    char charValue[3];
+    sprintf(charValue, "%i", cpt);
+    char dest[7];
+    char *pdest = &dest;
+    strncat(pdest,charValue, 3);
+    strncat(pdest,".dat", 7);
+    printf("la soluce: %s", pdest);
+    return &dest;
+}
 
 void mise_a_jour(FILE* f, struct Date date){
     ENTETE e_anc;
@@ -172,7 +181,7 @@ void mise_a_jour(FILE* f, struct Date date){
     fermer(f);
 
 }
-int compte_existant(FILE *file, int numcpt){
+int compte_existant_num(FILE *file, int numcpt){
     ACCOUNT account;
     int exist = 0, end;
     while (!exist) {
@@ -187,27 +196,47 @@ int compte_existant(FILE *file, int numcpt){
     return 0;
 }
 
+int compte_existant_char(FILE *file, int numcpt){
+    ACCOUNT account;
+    int exist = 0, end;
+    while (!exist) {
+        end = fread(&account, sizeof(ACCOUNT),1,file);
+        if (end == 0) break;
+        if (strcmp(account.id, numcpt) == 0) {
+            // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
+            fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
 int creer_utilisateur(char* nom){
     ACCOUNT account;
-    strcpy(account.name, nom);
-    //création du fihcier de compte personnel
-    struct Date d;
-    date(&d);
-    print_Date(&d);
-    ENTETE  entete;
-    entete = creation_entete(d, 0);//file en argv? car compte perso
-    char ext[] = ".dat";
-    char nomcpt = strcat(nom, nom);
-    creation_fichier(entete,&nomcpt);
-    // mise à jour du répertoire de la banque
     FILE* rep;
     int num = rand(), inc = 0;
     ouvrir(&rep,"banque.dat");
+
     while (!inc){
-        if (!compte_existant(rep, num)) break;
+        if (!compte_existant_num(rep, num)) break;
         num = rand();
     }
     account.id = num;
+
+
+    strcpy(account.name, &nom);
+    //création du fihcier de compte personnel
+    struct Date d;
+    date(&d);
+    ENTETE  entete;
+    entete = creation_entete(d, 0);//file en argv? car compte perso
+    char nom_cpt_perso = str_str(account.id);
+    creation_fichier(entete,nom_cpt_perso);
+
+
+    // mise à jour du répertoire de la banque
+
     fseek(rep, 0, SEEK_END);
     fwrite(&account, sizeof(ACCOUNT), 1, rep);
     fermer(rep);
@@ -261,19 +290,17 @@ int test(FILE *file) {
     return 0;
 }
 
+int compte_de(char* nomclt) {
 
-void str_str(char *nomclt){
 
-    char ext = ".dat";
-    char dest;
-    strcat(dest,nomclt);
-    strcat(dest, ext);
-    printf(dest);
+
 }
+
+
 void menu(FILE *fic)
 {
     char choix;
-    char nom = "bento";
+    char nom[LENGTH_NAME];
 
     do {
         printf("\n\nAjouter un nouveau client..............: A\n");
@@ -289,12 +316,13 @@ void menu(FILE *fic)
         {
             case 'a':
             case 'A':
-                test(fic);
+                printf("Nom Client : \n");
+                gets(nom);
+                creer_utilisateur(&nom);
                 break;
             case 'l':
             case 'L':
-                str_str(nom);
-//                creer_utilisateur("bentv2");
+//                str_str(nom);
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
