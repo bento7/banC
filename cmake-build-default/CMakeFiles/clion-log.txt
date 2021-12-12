@@ -1,0 +1,4 @@
+"D:\projects\CLion 2021.3\bin\cmake\win\bin\cmake.exe" -G "CodeBlocks - MinGW Makefiles" D:\Projets_C\banC
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Projets_C/banC/cmake-build-default

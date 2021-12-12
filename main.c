@@ -181,13 +181,14 @@ void mise_a_jour(FILE* f, struct Date date){
     fermer(f);
 
 }
+
 int compte_existant_num(FILE *file, int numcpt){
     ACCOUNT account;
     int exist = 0, end;
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
-        if (end == 0) break;
-        if (strcmp(account.id, numcpt) == 0) {
+        if (end == 1) break;
+        if (account.id == numcpt) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
             fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
             return 1;
@@ -201,7 +202,7 @@ int compte_existant_char(FILE *file, int numcpt){
     int exist = 0, end;
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
-        if (end == 0) break;
+        if (end == 1) break;
         if (strcmp(account.id, numcpt) == 0) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
             fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
@@ -217,7 +218,7 @@ int creer_utilisateur(char* nom){
     FILE* rep;
     int num = rand(), inc = 0;
     ouvrir(&rep,"banque.dat");
-
+    printf("%i",num);
     while (!inc){
         if (!compte_existant_num(rep, num)) break;
         num = rand();
@@ -232,6 +233,7 @@ int creer_utilisateur(char* nom){
     ENTETE  entete;
     entete = creation_entete(d, 0);//file en argv? car compte perso
     char nom_cpt_perso = str_str(account.id);
+
     creation_fichier(entete,nom_cpt_perso);
 
 
@@ -317,7 +319,7 @@ void menu(FILE *fic)
             case 'a':
             case 'A':
                 printf("Nom Client : \n");
-                gets(nom);
+                scanf("%s",&nom);
                 creer_utilisateur(&nom);
                 break;
             case 'l':
