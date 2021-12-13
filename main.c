@@ -96,10 +96,10 @@ struct Entete creation_entete(struct Date d, float solde){
 FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
     ouvrir(&file, nom1);
-    ENTETE *e = &entete;
-    fprintf(file, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
-    fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
-    fread(&entete, sizeof(entete), 1, file);
+//    printf( "Le solde du compte est %f a la date suivante %i/%i/%i\n", entete.solde, entete.date.day,entete.date.month,entete.date.year);
+    fprintf(file, "%i %i %i %f\n", entete.date.day,entete.date.month,entete.date.year,entete.solde);
+//    fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
+//    fread(&entete, sizeof(entete), 1, file);
     fermer(file);
     return file;
 }
@@ -133,13 +133,21 @@ struct Transaction lire_transaction(FILE* fp){
     // faire un close
     return trans;
 }
-struct Entete lire_entete(FILE* fp){
-    ENTETE entete;
-    ENTETE *e = &entete;
-    fprintf(fp, "Le solde du compte est %f € à la date suivante %i/%i/%i\n", entete.solde, e->date.day,e->date.month,e->date.year);
+int lire_entete(FILE* fp, ENTETE *e){
 
-    // faire un close
-    return entete;
+    int jour, mois, annee;
+    float s;
+    if(fscanf(fp, "%i %i %i %f\n", &jour, &mois, &annee, &s) != 4) {
+        printf("yoo");
+        return 1;
+    }
+    e->date.day = jour;
+    e->date.month = mois;
+    e->date.year = annee;
+    e->solde = s;
+
+    printf("le jour %i, mois %i, annee %i sont ",jour,mois,annee);
+    return 0;
 }
 void print_transaction(TRANSACTION trans){
     printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", trans.amount, trans.label, trans.name);
@@ -158,7 +166,7 @@ void mise_a_jour(FILE* f, struct Date date){
     ouvrir(&f, "compte.dat");
 
 //    fread(&e_anc, sizeof(ENTETE), 1, f);
-    e_anc = lire_entete(f);
+//    e_anc = lire_entete(f);
 
     print_entete(e_anc);
     // placement pointeur pour lire la dernière transaction
@@ -181,11 +189,14 @@ void mise_a_jour(FILE* f, struct Date date){
 }
 int compte_existant_num(FILE *file, int numcpt){
     ACCOUNT account;
+    printf("%i",numcpt);
 
     int exist = 0, end;
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
         if (end == 0) break;
+        printf("%i",&account.id);
+
         if (account.id== numcpt) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
             fseek(file -1l * sizeof(ACCOUNT), 1, SEEK_CUR);
@@ -248,7 +259,9 @@ int creer_utilisateur(char* nom){
     return 0;
 }
 
-int test(FILE *file) {
+int test() {
+    FILE *file;
+    ouvrir(&file, "banque.dat");
     struct Date d;
     date(&d);
     print_Date(&d);
@@ -287,9 +300,11 @@ int test(FILE *file) {
 
 
     mise_a_jour(file, d);
-//    fermer(file);
+    fermer(file);
     ENTETE be;
-    be = lire_entete(file);
+    FILE* f;
+    ouvrir(&f, "compte.dat");
+    lire_entete(file, &e);
     print_entete(be);
     return 0;
 }
@@ -398,8 +413,26 @@ virement_de_a(){
     return 0;
 }
 
+int nom_compte(int num_compte, char* nom){
+    char filename [7];
+    char str_num_compte[3];
+    sprintf(str_num_compte, "%i", num_compte); // convertir le num de compte en chaine de caractères
+    strncat(filename, str_num_compte,3);   // concaténer le path
+    strncat(filename, ".dat",7);
+    strcpy(nom, filename);
+
+    //    char charValue[3];
+//    sprintf(charValue, "%i", numclt);
+//    char dest[7];
+//    char *pdest = &dest;
+//    strncat(dest, charValue, 3);
+//    strncat(dest, ".dat", 7);
+    return 0;
+}
+
 int imprimer_releve() {
     char nom[LENGTH_NAME];
+    char file_perso[LENGTH_NAME];
     int exist = 0, mois = 0, numclt;
 
     ACCOUNT account;
@@ -412,14 +445,15 @@ int imprimer_releve() {
         printf("Entrez le nom du client : \n");
         scanf("%s", &nom);
         numclt = compte_de(&nom);
-        exist = 1;
-//        if ((exist = compte_existant_num(f, numclt))) {
-//            printf("Compte existant. \n");
-//        } else {
-//            printf("Aucun compte existant à ce nom. \n");
-//        }
+        if ((compte_de(&nom) < 0 )) {
+            printf("Aucun compte existant a ce nom. Veuillez rentrer un nom valide. \n");
+        } else {
+            exist = 1;
+            printf("Compte existant. \n");
+        }
     }
     fermer(f);
+
     while (mois < 1 || mois > 12) {
         printf("Veuillez entrer un mois par son numero (1 pour janvier et 12 pour decembre)\n");
         scanf("%i", &mois);
@@ -431,34 +465,48 @@ int imprimer_releve() {
     ENTETE e;
     TRANSACTION t;
     FILE *file;
+
+
+    nom_compte(numclt, &file_perso);
     char charValue[3];
     sprintf(charValue, "%i", numclt);
+    printf("charvalue %s\n",charValue);
     char dest[7];
     char *pdest = &dest;
     strncat(dest, charValue, 3);
     strncat(dest, ".dat", 7);
-    printf("nom du fichier %s :\n",dest);
+    printf("le nom du fichier est %s\n",dest);
     ouvrir(&file, dest);
+    int res;
+    fseek(f, 0, SEEK_SET); // On se place au début du document
 
-    e = lire_entete(file);
-    print_entete(e);
-    printf("Solde de %f au %i/%i/%i \n", e.solde, e.date.day, &e.date.month, &e.date.year);
+//    lire_entete(file, &e);
+
+    printf("En-tete : \n");
+    fread(&e, sizeof(e),1,file);
+    printf("Date: %i / %i / %i Solde : %f \n", e.date.day, e.date.month, e.date.year, e.solde);
+
     printf(("Transactions : \n"));
 
-    int end = 1;
-    while (end) {
-        end = fread(&t, sizeof(TRANSACTION), 1, file);
-        if (end == 0) break;
-        if (t.date.month == mois) {
-            print_transaction(t);
 
-        }
-
-    }
+    do{
+        res = fread(&t, sizeof(t), 1, file); // Ecriture du compte dans account
+        if(res > 0) printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", t.amount, t.label, t.name);
+        // on évite d'imprimer en double la derniere ligne
+    }while(res > 0);
     fermer(file);
     return 1;
 }
+void test_test(){
+    FILE * f;
+    ENTETE e;
+    ouvrir(&f, "681.dat");
+    lire_entete(f, &e);
+    fermer(f);
+    printf("En-tete : \n");
+    printf("Date: %i / %i / %i Solde : %f \n", e.date.day, e.date.month, e.date.year, e.solde);
 
+}
 void menu()
 {
     char choix;
@@ -493,6 +541,11 @@ void menu()
             case 'v':
             case 'V':
                 virement_de_a();
+                break;
+            case 'm':
+            case 'M':
+
+                test();
                 break;
         }
     } while (choix != 'q' && choix != 'Q');
