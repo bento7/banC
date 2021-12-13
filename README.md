@@ -1,11 +1,11 @@
 # banC
 Fonctionnement : exécuter le fichier "main.c" puis intéragir avec le menu suivant via la console.
 
-printf("\n\nAjouter un nouveau client..............: A\n");
-printf("Lister tous les comptes de clients.....: L\n");
-printf("Releve d'un compte client..............: R\n");
-printf("Virement depuis un compte client.......: V\n");
-printf("Mise a jour du solde d'un client.......: M\n");
+printf("\n\nAjouter un nouveau client..............: A\n"); 
+printf("Lister tous les comptes de clients.....: L\n"); 
+printf("Releve d'un compte client..............: R\n"); 
+printf("Virement depuis un compte client.......: V\n"); 
+printf("Mise a jour du solde d'un client.......: M\n"); 
 printf("Quitter................................: Q\n");
 
 
