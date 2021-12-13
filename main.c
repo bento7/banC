@@ -97,8 +97,9 @@ FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
     ouvrir(&file, nom1);
 //    printf( "Le solde du compte est %f a la date suivante %i/%i/%i\n", entete.solde, entete.date.day,entete.date.month,entete.date.year);
-    fprintf(file, "%i %i %i %f\n", entete.date.day,entete.date.month,entete.date.year,entete.solde);
-//    fwrite(e, sizeof(TRANSACTION), 1, (FILE *) file); // On écrit l'entete
+//    fprintf(file, "%i %i %i %f\n", entete.date.day,entete.date.month,entete.date.year,entete.solde);
+//    ENTETE *e = &entete;
+    fwrite(&entete, sizeof(ENTETE), 1, (FILE *) file); // On écrit l'entete
 //    fread(&entete, sizeof(entete), 1, file);
     fermer(file);
     return file;
@@ -195,7 +196,6 @@ int compte_existant_num(FILE *file, int numcpt){
     while (!exist) {
         end = fread(&account, sizeof(ACCOUNT),1,file);
         if (end == 0) break;
-        printf("%i",&account.id);
 
         if (account.id== numcpt) {
             // on replace le curseur avant le compte qui existe pour le lire ensuite si besoin
@@ -418,7 +418,7 @@ int nom_compte(int num_compte, char* nom){
     char str_num_compte[3];
     sprintf(str_num_compte, "%i", num_compte); // convertir le num de compte en chaine de caractères
     strncat(filename, str_num_compte,3);   // concaténer le path
-    strncat(filename, ".dat",7);
+    strncat(filename, ".dat",4);
     strcpy(nom, filename);
 
     //    char charValue[3];
@@ -432,7 +432,7 @@ int nom_compte(int num_compte, char* nom){
 
 int imprimer_releve() {
     char nom[LENGTH_NAME];
-    char file_perso[LENGTH_NAME];
+    char file_perso[7];
     int exist = 0, mois = 0, numclt;
 
     ACCOUNT account;
@@ -467,7 +467,7 @@ int imprimer_releve() {
     FILE *file;
 
 
-    nom_compte(numclt, &file_perso);
+//    nom_compte(numclt, &file_perso);
     char charValue[3];
     sprintf(charValue, "%i", numclt);
     printf("charvalue %s\n",charValue);
@@ -476,6 +476,7 @@ int imprimer_releve() {
     strncat(dest, charValue, 3);
     strncat(dest, ".dat", 7);
     printf("le nom du fichier est %s\n",dest);
+    printf("fileperso %s\n", dest);
     ouvrir(&file, dest);
     int res;
     fseek(f, 0, SEEK_SET); // On se place au début du document
@@ -490,7 +491,7 @@ int imprimer_releve() {
 
 
     do{
-        res = fread(&t, sizeof(t), 1, file); // Ecriture du compte dans account
+        res = fread(&t, sizeof(t), 1, file);
         if(res > 0) printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", t.amount, t.label, t.name);
         // on évite d'imprimer en double la derniere ligne
     }while(res > 0);
