@@ -23,7 +23,6 @@ int comp_date(struct Date d1, struct Date d2){
 
     if (nb1 > nb2) return 1;
     if (nb1 <= nb2) return 0;
-
 }
 
 // create struct Transaction
@@ -95,6 +94,7 @@ struct Entete creation_entete(struct Date d, float solde){
 FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
     ouvrir(&file, nom1);
+    fseek(file, 0, SEEK_SET);
     fwrite(&entete, sizeof(ENTETE), 1, (FILE *) file); // On écrit l'entete
     fermer(file);
     return file;
@@ -148,13 +148,13 @@ int lire_entete(FILE* fp, ENTETE *e){
 void print_transaction(TRANSACTION trans){
     printf("TRANSACTION ");
     print_Date(&trans.date);
-    printf("-- montant: %f , label : %s, name : %s\n", trans.amount, trans.label, trans.name);
+    printf("-- montant: %f , label : %s\n", trans.amount, trans.label);
 
 }
 
-void print_entete(ENTETE e){
-    printf("\nSolde est %f\n",e.solde);
-    print_Date(&e.date);
+void print_entete(ENTETE *e){
+    printf("Le solde est de: %f\n",e->solde);
+    print_Date(&e->date);
 
 }
 
@@ -214,6 +214,7 @@ int creer_utilisateur(char* nom){
     // Mise à jour du fichier banque
     fseek(f, 0, SEEK_END);
     fwrite(&account, sizeof(ACCOUNT), 1, f);
+    fseek(f, 0, SEEK_SET);
     fermer(f);
     return 0;
 }
@@ -222,6 +223,7 @@ void read_Banque(){
     /*
      * Cette Fonction a pour but de lister les comptes clients
      * */
+
     int res;
     FILE *f;
     ACCOUNT account;
@@ -237,8 +239,11 @@ void read_Banque(){
     fermer(f);
 }
 
-// Renvoie le numéro de compte associé à ce nom.
 int compte_de(char *nomclt){
+    /*
+     * Cette fonction renvoie le numéro de compte
+     * associé au nom donné en argument
+    */
     ACCOUNT account;
 
     FILE *f;
@@ -282,27 +287,28 @@ virement_de_a(){
         char *pdest = &dest;
         strncat(dest,charValue, 3);
         strncat(dest,".dat", 7);
+
+        // Récupération du solde en entête du client émetteur
         FILE *f;
         ouvrir(&f, dest);
-
         ENTETE e;
-        TRANSACTION t;
         fread(&e, sizeof(e),1,f);
         float solde = e.solde;
         fermer(f);
-        res = solde - montant; // Ecriture du compte dans account
+
+        // Vérification de la possibilité de virement
+        res = solde - montant; // Calcul de la différence
 
         if(res <0) {
-            printf("Montant trop gros.Fonds indisponibles.\n");
+            printf("Virement impossible .Fonds indisponibles.\n");
         }
-
+    // Condition d'arrêt : lorsque le virement est possible
     }while(res <0);
 
-    // Initialisation des noms et des labels
+    // Initialisation des noms et des labels de transaction
     char label_em[LENGTH_LABEL], label_rec[LENGTH_LABEL];
-
-    sprintf(label_em, "virement to %i", nocpt_rec);
-    sprintf(label_rec, "virement from %i", nocpt_em);
+    sprintf(label_em, "virement a %s - no %i", nom_receveur, nocpt_rec);
+    sprintf(label_rec, "virement from %s - no%i", nom_emetteur, nocpt_em);
 
     // création des transactions
     struct Transaction trans_em, trans_rec;
@@ -361,7 +367,8 @@ int mise_a_jour_solde(char *nom){
     ENTETE e;
     TRANSACTION t;
     fread(&e, sizeof(e),1,f);
-    date(&e.date); // e.date = date aujourd'hui
+    //date(&e.date); // e.date = date aujourd'hui
+    print_entete(&e);
     int res;
     do{
         res = fread(&t, sizeof(t), 1, f); // Ecriture du compte dans account
@@ -376,7 +383,6 @@ int mise_a_jour_solde(char *nom){
     fwrite(&e, sizeof (ENTETE), 1, f);
     fermer(f);
     return 0;
-
 }
 
 int imprimer_releve() {
@@ -424,16 +430,15 @@ int imprimer_releve() {
     strncat(filename, ".dat",7);
     strcpy(pfile_perso, filename);
 
-    ouvrir(&file, pfile_perso);
     int res;
+    ouvrir(&file, pfile_perso);
     fseek(f, 0, SEEK_SET); // On se place au début du document
-
-    printf("En-tete : \n");
     fread(&e, sizeof(ENTETE),1,file);
 
-    print_entete(e);
+    printf("En-tete : \n");
+    print_entete(&e);
 
-    printf(("Transactions : \n"));
+    printf("\nTransactions : \n");
 
     do{
         res = fread(&t, sizeof(t), 1, file); // Ecriture du compte dans account
@@ -442,7 +447,7 @@ int imprimer_releve() {
     }while(res > 0);
 
     fermer(file);
-    return 1;
+    return 0;
 }
 
 void menu()
