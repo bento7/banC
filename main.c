@@ -96,11 +96,17 @@ struct Entete creation_entete(struct Date d, float solde){
 FILE* creation_fichier(ENTETE entete, char* nom1){
     FILE* file;
     ouvrir(&file, nom1);
+<<<<<<< HEAD
 //    printf( "Le solde du compte est %f a la date suivante %i/%i/%i\n", entete.solde, entete.date.day,entete.date.month,entete.date.year);
 //    fprintf(file, "%i %i %i %f\n", entete.date.day,entete.date.month,entete.date.year,entete.solde);
 //    ENTETE *e = &entete;
     fwrite(&entete, sizeof(ENTETE), 1, (FILE *) file); // On écrit l'entete
 //    fread(&entete, sizeof(entete), 1, file);
+=======
+
+    fwrite(&entete, sizeof(ENTETE), 1, (FILE *) file); // On écrit l'entete
+
+>>>>>>> d3dc4bb66ad8cf29a649d42e8f0f087c1fa29e6e
     fermer(file);
     return file;
 }
@@ -420,13 +426,8 @@ int nom_compte(int num_compte, char* nom){
     strncat(filename, str_num_compte,3);   // concaténer le path
     strncat(filename, ".dat",4);
     strcpy(nom, filename);
-
-    //    char charValue[3];
-//    sprintf(charValue, "%i", numclt);
-//    char dest[7];
-//    char *pdest = &dest;
-//    strncat(dest, charValue, 3);
-//    strncat(dest, ".dat", 7);
+    printf("nom:%s\n", nom);
+    printf("nom:%s\n", &nom);
     return 0;
 }
 
@@ -466,6 +467,7 @@ int imprimer_releve() {
     TRANSACTION t;
     FILE *file;
 
+<<<<<<< HEAD
 
 //    nom_compte(numclt, &file_perso);
     char charValue[3];
@@ -478,10 +480,14 @@ int imprimer_releve() {
     printf("le nom du fichier est %s\n",dest);
     printf("fileperso %s\n", dest);
     ouvrir(&file, dest);
+=======
+    nom_compte(numclt, &file_perso);
+    printf("File_perso: %s\n", &file_perso);
+    printf("File_perso2: %s\n", file_perso);
+    ouvrir(&file, file_perso);
+>>>>>>> d3dc4bb66ad8cf29a649d42e8f0f087c1fa29e6e
     int res;
     fseek(f, 0, SEEK_SET); // On se place au début du document
-
-//    lire_entete(file, &e);
 
     printf("En-tete : \n");
     fread(&e, sizeof(e),1,file);
@@ -495,9 +501,11 @@ int imprimer_releve() {
         if(res > 0) printf("\nAffichage de la transaction\nmontant: %f , label : %s, name : %s\n", t.amount, t.label, t.name);
         // on évite d'imprimer en double la derniere ligne
     }while(res > 0);
+
     fermer(file);
     return 1;
 }
+
 void test_test(){
     FILE * f;
     ENTETE e;

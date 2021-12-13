@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "D:\projects\CLion 2021.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" D:\Projets_C\banC
 -- The C compiler identification is GNU 11.2.0
 -- Detecting C compiler ABI info
@@ -5,6 +6,9 @@
 -- Check for working C compiler: D:/projects/CLion 2021.3/bin/mingw/bin/gcc.exe - skipped
 -- Detecting C compile features
 -- Detecting C compile features - done
+=======
+"C:\Program Files\JetBrains\CLion 2021.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2021.3/bin/ninja/win/ninja.exe" -G Ninja C:\Users\thoma\CLionProjects\banC
+>>>>>>> d3dc4bb66ad8cf29a649d42e8f0f087c1fa29e6e
 -- Configuring done
 -- Generating done
 -- Build files have been written to: D:/Projets_C/banC/cmake-build-debug
