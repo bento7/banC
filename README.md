@@ -1,4 +1,5 @@
 # banC
+Projet de gestion de compte en banque pour le cours de C/C++
 Fonctionnement : exécuter le fichier "main.c" puis intéragir avec le menu suivant via la console.
 
 printf("\n\nAjouter un nouveau client..............: A\n");
